@@ -8,24 +8,35 @@ class SourceRetrieverUI:
 
     def render_article_info(self, idx: int, row: pd.Series):
         """Render article information in the Streamlit UI."""
-        with st.expander(f"Source {idx + 1}: {row['title'] if row['title'] else row['url'][:100]}..."):
+        def escape_markdown(text):
+            """Escape markdown special characters."""
+            if not isinstance(text, str):
+                return text
+            # Characters to escape: * _ ` [ ] ( ) # + - . ! { } > |
+            special_chars = ['$', '*', '_', '`', '[', ']', '(', ')', '#', '+', '-', '.', '!', '{', '}', '>', '|']
+            for char in special_chars:
+                text = text.replace(char, '\\' + char)
+            return text
+
+        title = escape_markdown(row['title'] if row['title'] else row['url'][:100])
+        with st.expander(f"Source {idx + 1}: {title}..."):
             col1, col2 = st.columns(2)
             
             with col1:
                 st.write("**Source Website:**")
-                st.write(row['source'])
+                st.write(escape_markdown(row['source']))
                 st.write("**URL:**")
-                st.write(row['url'])
+                st.markdown(row['url'])  # Don't escape URLs
                 
             with col2:
                 st.write("**Publication Date:**")
                 st.write(row['date'].strftime('%Y-%m-%d') if pd.notnull(row['date']) else 'Date not available')
                 if row['authors']:
                     st.write("**Authors:**")
-                    st.write(", ".join(row['authors']))
+                    st.write(escape_markdown(", ".join(row['authors'])))
             
             st.write("**Content:**")
-            st.write(row['content'])
+            st.write(escape_markdown(row['content']))
 
     def render_search_results(self, results_df: pd.DataFrame):
         """Render search results in the Streamlit UI."""
