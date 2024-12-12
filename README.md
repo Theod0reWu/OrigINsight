@@ -20,9 +20,28 @@ git clone https://github.com/Theod0reWu/OrigINsight.git
 cd OrigINsight
 ```
 
-2. Install required packages:
+2. Create and activate a virtual environment (recommended):
+
+On Windows:
+```bash
+python -m venv venv
+.\venv\Scripts\activate
+```
+
+On macOS/Linux:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+3. Install required packages:
 ```bash
 pip install -r requirements.txt
+```
+
+Note: To deactivate the virtual environment when you're done, simply run:
+```bash
+deactivate
 ```
 
 
@@ -33,9 +52,9 @@ pip install -r requirements.txt
 Run the web interface with:
 
 ```bash
-streamlit run streamlit_app.py
+# Make sure you're in the root directory
+python -m streamlit run src/ui/streamlit_app.py
 ```
-
 
 The web interface provides:
 - Input field for claims to verify
@@ -49,7 +68,7 @@ The web interface provides:
 Run from command line with:
 
 ```bash
-python backend/source_retrieval.py "your claim here" [options]
+python src/core/source_retrieval.py "your claim here" [options]
 ```
 
 Options:
@@ -62,7 +81,7 @@ Options:
 Example:
 
 ```bash
-python backend/source_retrieval.py "Earth is round" -n 10 --verify --gemini-key YOUR_API_KEY --output results.csv
+python src/core/source_retrieval.py "Earth is round" -n 10 --verify --gemini-key YOUR_API_KEY --output results.csv
 ```
 
 

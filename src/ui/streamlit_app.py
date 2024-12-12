@@ -1,5 +1,5 @@
 import streamlit as st
-from backend.source_retrieval import SourceRetriever
+from src.core.source_retrieval import SourceRetriever
 import pandas as pd
 
 class SourceRetrieverUI:
