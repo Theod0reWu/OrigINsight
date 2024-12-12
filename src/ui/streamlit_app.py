@@ -69,8 +69,8 @@ class SourceRetrieverUI:
             verdict_color = {
                 "TRUE": "darkgreen",
                 "FALSE": "darkred",
-                "PARTIALLY TRUE": "yellow",
-                "INSUFFICIENT EVIDENCE": "yellow"
+                "PARTIALLY TRUE": "#FFB80F",
+                "INSUFFICIENT EVIDENCE": "#FFB80F"
             }.get(verification_result['verdict'], "black")  # Default to black if not found
 
             # Display the verdict with color
