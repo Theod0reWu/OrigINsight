@@ -65,7 +65,16 @@ class SourceRetrieverUI:
                 st.text(raw_response)
         
         if verification_result:
-            st.write(f"**Verdict:** {verification_result['verdict']}")
+            # Determine the color based on the verdict
+            verdict_color = {
+                "TRUE": "darkgreen",
+                "FALSE": "darkred",
+                "PARTIALLY TRUE": "yellow",
+                "INSUFFICIENT EVIDENCE": "yellow"
+            }.get(verification_result['verdict'], "black")  # Default to black if not found
+
+            # Display the verdict with color
+            st.markdown(f"<h3 style='color: {verdict_color};'>Verdict: {verification_result['verdict']}</h3>", unsafe_allow_html=True)
             st.write(f"**Confidence:** {verification_result['confidence']}")
             st.write("**Explanation:**")
             st.write(verification_result['explanation'])
