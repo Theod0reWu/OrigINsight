@@ -83,6 +83,44 @@ class SourceRetriever:
             print(f"Error extracting content from {url}: {e}")
             return None
 
+    def decompose_claim_with_gemini(self, claim: str):
+        if not self.model:
+            print("Gemini API key not configured")
+            return None
+
+        try:
+            prompt = f"""
+            You must respond with valid JSON only. We want to verify the given claim:
+            
+            Claim: {claim}
+
+            To verify the claim we would need to search for articles and webpages that would contain 
+            the necessary information to draw conclusions about the claim. Provide the minimum number of queries needed to have all the necessary information on hand.
+            
+            Respond with this exact JSON structure, no other text:
+            {{
+                "search_queries": ["<query>"]
+            }}
+            """
+
+            response = self.model.generate_content(prompt)
+            
+            # Store raw response
+            raw_response = response.text if response.parts else "No response generated"
+            
+            # Try to parse JSON response
+            if response.parts:
+                try:
+                    result = json.loads(response.text)
+                    return result, raw_response
+                except json.JSONDecodeError:
+                    print(f"Failed to parse JSON. Raw response: {raw_response}")
+                    return None, raw_response
+            return None, raw_response
+        except Exception as e:
+            print(f"Error during claim verification: {e}")
+            return None, str(e)
+
     def verify_claim_with_gemini(self, claim: str, context: str) -> Optional[Dict[str, Any]]:
         """Verify a claim using Gemini API with provided context."""
         if not self.model:
@@ -124,16 +162,25 @@ class SourceRetriever:
                     print(f"Failed to parse JSON. Raw response: {raw_response}")
                     return None, raw_response
             return None, raw_response
-
         except Exception as e:
             print(f"Error during claim verification: {e}")
             return None, str(e)
 
     def search_and_process_articles(self, claim: str, num_results: int = 10, verify: bool = False) -> pd.DataFrame:
         """Search and process articles relevant to a claim, optionally verify with Gemini."""
+        claims = []
+        if verify and self.model:
+            output = self.decompose_claim_with_gemini(claim)
+            if output[0] is not None:
+                claims = output[0]["search_queries"]
+        print("claims:", claims)
+
         print(f"Searching for articles relevant to the claim: {claim}")
         urls = self.search_articles_duckduckgo(claim, num_results)
-        
+        if len(claims) > 0:
+            for c in claims:
+                urls.extend(self.search_articles_duckduckgo(c, num_results))
+
         data = []
         context = ""
         for url in urls:
@@ -143,6 +190,8 @@ class SourceRetriever:
                 data.append(article_info.__dict__)
                 if verify and article_info.content:
                     context += article_info.content + "\n\n"
+
+        # print("Context:", context)
         
         results_df = pd.DataFrame(data)
         
