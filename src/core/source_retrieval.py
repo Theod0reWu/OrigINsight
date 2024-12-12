@@ -167,6 +167,20 @@ def save_results(df: pd.DataFrame, output_path: str):
     else:
         raise ValueError("Output file must be either .csv or .json")
 
+def run_test():
+    claims_to_test = [
+    "MicroStrategy has benefited from the rally in cryptocurrencies this year", 
+    "AI models are getting better almost every month right now", 
+    "Sales of iPhone were up less than 1\% in fiscal 2024 (which ended in September)", 
+    "The valuation of Circle’s shares on the private market reportedly reached $5 billion before Trump’s election",
+    "Nvidia's projected earnings per share are expected to grow by 125.38% year-over-year in 2025.",
+    "Higher-income households preferred online shopping during Thanksgiving weekend, while lower-income consumers favored in-person deals", 
+    "The stock of Apple (NASDAQ: AAPL) is up 22% year to date in 2024", 
+    "Nvidia's supply concerns, including delays with Blackwell AI chips, are reportedly resolved",
+    "Amazon achieved record sales during Black Friday week in 2024, driven by early holiday discounts.",
+    ]
+
+
 def main():
     """Command line interface for source retrieval."""
     parser = argparse.ArgumentParser(description='Search and process articles for fact-checking.')
